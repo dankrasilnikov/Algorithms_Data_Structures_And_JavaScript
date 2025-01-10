@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimized Animation</title>
+    <style>
+        .box {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: blue;
+        }
+    </style>
+</head>
+<body>
+<script>
+    const TOTAL_BOXES = 100;
+    const CHUNK_SIZE = 100;
+    let currentChunk = 0;
+    let boxes = [];
+
+    for(let i = 0; i < TOTAL_BOXES; i++) {
+        const box = document.createElement('div');
+        box.classList.add('box');
+        box.style.backgroundColor = getRandomColor();
+        box.x = Math.random() * window.innerWidth;
+        box.y = Math.random() * window.innerHeight;
+        box.vx = (Math.random() - 0.5) * 4; // скорость по оси x
+        box.vy = (Math.random() - 0.5) * 4; // скорость по оси y
+        boxes.push(box);
+        document.body.appendChild(box);
+    }
+
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+
+        return color;
+    }
+
+    function adjustRGB(color) {
+        // Извлекаем значения R, G, B из строки, например, "rgb(100, 150, 200)"
+        const [r, g, b] = color.match(/\d+/g).map(Number);
+
+        // Определяем изменение цвета
+        const step = 5; // Шаг изменения, можно менять для большего/меньшего изменения
+        let newR = r + step > 255 ? 0 : (r + step) % 256;
+        let newG = g + step > 255 ? 0 : (g + step) % 256;
+        let newB = b + step > 255 ? 0 : (b + step) % 256;
+
+        // Возвращаем новый цвет в формате "rgb(r, g, b)"
+        return `rgb(${newR}, ${newG}, ${newB})`;
+    }
+
+    const updateBox = (box) => {
+        box.x += box.vx;
+        box.y += box.vy;
+        if(box.x <= 0 || box.x >= window.innerWidth - 30) box.vx *= -1;
+        if(box.y <= 0 || box.y >= window.innerHeight - 30) box.vy *= -1;
+
+        box.style.transform = `translate(${box.x}px, ${box.y}px)`;
+        // console.log(box.style.backgroundColor, incrementHexColor(box.style.backgroundColor))
+        box.style.backgroundColor = adjustRGB(box.style.backgroundColor);
+    }
+
+    const animate = () => {
+        const start = currentChunk * CHUNK_SIZE;
+        const end = Math.min(start + CHUNK_SIZE, TOTAL_BOXES);
+
+        for (let i = start; i < end; i++) {
+            updateBox(boxes[i]);
+        }
+
+        currentChunk = (currentChunk + 1) % Math.ceil(TOTAL_BOXES / CHUNK_SIZE);
+        requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+</script>
+</body>
+</html>
