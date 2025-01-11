@@ -1,4 +1,4 @@
-import {SEARCH_NUMBERS_ITEM, SORTED_NUMBERS_ARR} from "../mockData";
+import {SEARCH_NUMBERS_ITEM, SORTED_NUMBERS_ARR} from "../../mockData";
 
 
 export const binarySearchCycle= (arr: number[], goal: number): number | null => {
